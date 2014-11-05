@@ -1,0 +1,12 @@
+c:\users\mark\documents\visual studio 2013\Projects\MazeGame\MazeGame\MazeGame\bin\x86\Debug\MazeGame.exe
+c:\users\mark\documents\visual studio 2013\Projects\MazeGame\MazeGame\MazeGame\bin\x86\Debug\MazeGame.pdb
+c:\users\mark\documents\visual studio 2013\Projects\MazeGame\MazeGame\MazeGame\obj\x86\Debug\MazeGame.csprojResolveAssemblyReference.cache
+c:\users\mark\documents\visual studio 2013\Projects\MazeGame\MazeGame\MazeGame\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
+c:\users\mark\documents\visual studio 2013\Projects\MazeGame\MazeGame\MazeGame\obj\x86\Debug\MazeGame.exe
+c:\users\mark\documents\visual studio 2013\Projects\MazeGame\MazeGame\MazeGame\obj\x86\Debug\MazeGame.pdb
+C:\Users\Mark\Documents\Visual Studio 2013\Projects\MazeGame\MazeGame\MazeGame\bin\x86\Debug\Content\SpriteFont1.xnb
+C:\Users\Mark\Documents\Visual Studio 2013\Projects\MazeGame\MazeGame\MazeGame\bin\x86\Debug\Content\stampedconcrete.xnb
+C:\Users\Mark\Documents\Visual Studio 2013\Projects\MazeGame\MazeGame\MazeGame\bin\x86\Debug\Content\brickwall.xnb
+C:\Users\Mark\Documents\Visual Studio 2013\Projects\MazeGame\MazeGame\MazeGame\bin\x86\Debug\Content\hammeredglasswall.xnb
+C:\Users\Mark\Documents\Visual Studio 2013\Projects\MazeGame\MazeGame\MazeGame\bin\x86\Debug\Content\metalwall.xnb
+C:\Users\Mark\Documents\Visual Studio 2013\Projects\MazeGame\MazeGame\MazeGame\bin\x86\Debug\Content\pebblewall.xnb
