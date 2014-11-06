@@ -16,7 +16,7 @@ namespace MazeGame
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        public static bool clippingOn = true;
+        public static bool collisionOn = true;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -35,6 +35,9 @@ namespace MazeGame
         Texture2D glassWallTexture;
         Texture2D metalWallTexture;
         Texture2D pebbleWallTexture;
+
+        float moveScale = 1.5f;
+        float rotateScale = MathHelper.PiOver2;
 
         KeyboardState oldKeyState, newKeyState;
         GamePadState oldPadState, newPadState;
@@ -57,7 +60,7 @@ namespace MazeGame
             LoadContent();
             maze = new Maze(GraphicsDevice, new Texture2D[5] { floorTexture, brickWallTexture, 
                 glassWallTexture, metalWallTexture, pebbleWallTexture });
-            camera = new Camera(GraphicsDevice, maze);
+            camera = new Camera(GraphicsDevice.Viewport.AspectRatio);
             floorEffect = new BasicEffect(GraphicsDevice);
             brickWallEffect = new BasicEffect(GraphicsDevice);
             glassWallEffect = new BasicEffect(GraphicsDevice);
@@ -106,6 +109,9 @@ namespace MazeGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float moveAmount = 0;
+
             oldKeyState = newKeyState;
             oldPadState = newPadState;
             newKeyState = Keyboard.GetState();
@@ -115,21 +121,114 @@ namespace MazeGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || newKeyState.IsKeyDown(Keys.Escape))
                 this.Exit();
 
-            if((newKeyState.IsKeyDown(Keys.W) && !oldKeyState.IsKeyDown(Keys.W))
-                || (newPadState.Buttons.Y == ButtonState.Pressed && oldPadState.Buttons.Y != ButtonState.Pressed))
+            if(newKeyState.IsKeyDown(Keys.Up) || newPadState.ThumbSticks.Left.Y > 0)
             {
-                if(clippingOn)
+                moveAmount = moveScale * elapsed;
+            }
+
+            if(newKeyState.IsKeyDown(Keys.Down) || newPadState.ThumbSticks.Left.Y < 0)
+            {
+                moveAmount = -moveScale * elapsed;
+            }
+
+            if(newKeyState.IsKeyDown(Keys.Right) || newPadState.ThumbSticks.Right.X > 0)
+            {
+                camera.LeftRightRotation = MathHelper.WrapAngle(camera.LeftRightRotation - (rotateScale * elapsed));
+            }
+
+            if(newKeyState.IsKeyDown(Keys.Left) || newPadState.ThumbSticks.Right.X < 0)
+            {
+                camera.LeftRightRotation = MathHelper.WrapAngle(camera.LeftRightRotation + (rotateScale * elapsed));
+            }
+
+            if(newKeyState.IsKeyDown(Keys.X) || newPadState.ThumbSticks.Right.Y > 0)
+            {
+                if(camera.UpDownRotation > -1.5)
                 {
-                    clippingOn = false;
-                }
-                else
-                {
-                    clippingOn = true;
+                    camera.UpDownRotation = MathHelper.WrapAngle(camera.UpDownRotation - (rotateScale * elapsed));
                 }
             }
 
-            camera.UpdatePlayerPosition();
-            camera.UpdateCamera();
+            if(newKeyState.IsKeyDown(Keys.C) || newPadState.ThumbSticks.Right.Y < 0)
+            {
+                if(camera.UpDownRotation < 1.5)
+                {
+                    camera.UpDownRotation = MathHelper.WrapAngle(camera.UpDownRotation + (rotateScale * elapsed));
+                }
+            }
+
+            if((newKeyState.IsKeyDown(Keys.W) && !oldKeyState.IsKeyDown(Keys.W))
+                || (newPadState.Buttons.Y == ButtonState.Pressed && oldPadState.Buttons.Y != ButtonState.Pressed))
+            {
+                if(collisionOn)
+                {
+                    collisionOn = false;
+                }
+                else
+                {
+                    collisionOn = true;
+                }
+            }
+
+            if((newKeyState.IsKeyDown(Keys.LeftShift) && newKeyState.IsKeyDown(Keys.Z) && !oldKeyState.IsKeyDown(Keys.Z))
+                || (newPadState.Buttons.A == ButtonState.Pressed && oldPadState.Buttons.A != ButtonState.Pressed))
+            {
+                if(camera.currentFOVLevel < 2)
+                {
+                    camera.currentFOVLevel++;
+                    camera.UpdateProjection();
+                }
+            }
+
+            if((!newKeyState.IsKeyDown(Keys.LeftShift) && newKeyState.IsKeyDown(Keys.Z) && !oldKeyState.IsKeyDown(Keys.Z))
+                || (newPadState.Buttons.B == ButtonState.Pressed && oldPadState.Buttons.B != ButtonState.Pressed))
+            {
+                if(camera.currentFOVLevel > 0)
+                {
+                    camera.currentFOVLevel--;
+                    camera.UpdateProjection();
+                }
+            }
+
+            if(newKeyState.IsKeyDown(Keys.Home) || newPadState.Buttons.Start == ButtonState.Pressed)
+            {
+                camera.currentFOVLevel = 0;
+                camera.Position = camera.startingPosition;
+                camera.LeftRightRotation = 0;
+                camera.UpDownRotation = 0;
+                camera.UpdateProjection();
+            }
+
+            if(moveAmount != 0)
+            {
+                Vector3 newLocation = camera.PreviewMove(moveAmount);
+                bool moveOK = true;
+
+                if(newLocation.X < 0 || newLocation.X > Maze.mazeWidth)
+                {
+                    moveOK = false;
+                }
+                if(newLocation.Z < 0 || newLocation.Z > Maze.mazeHeight)
+                {
+                    moveOK = false;
+                }
+
+                if(collisionOn)
+                {
+                    foreach (BoundingBox box in maze.GetBoundsForCell((int)newLocation.X, (int)newLocation.Z))
+                    {
+                        if (box.Contains(newLocation) == ContainmentType.Contains)
+                        {
+                            moveOK = false;
+                        }
+                    }
+                }
+
+                if(moveOK)
+                {
+                    camera.MoveForward(moveAmount);
+                }
+            }
 
             base.Update(gameTime);
         }
@@ -145,9 +244,14 @@ namespace MazeGame
             maze.Draw(camera, new BasicEffect[5] { floorEffect, brickWallEffect, glassWallEffect, metalWallEffect, pebbleWallEffect });
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, camera.playerPosition.X + " " + camera.playerPosition.Z, new Vector2(0, 0), Color.Black);
-            spriteBatch.DrawString(font, "\nClipping On: " + clippingOn.ToString(), new Vector2(0, 0), Color.Black);
-            spriteBatch.DrawString(font, "\n\n" + camera.playerPitch, new Vector2(0, 0), Color.Black);
+            if(collisionOn)
+            {
+                spriteBatch.DrawString(font, "Collision Detection: Yes", new Vector2(0, 0), Color.Black);
+            }
+            else
+            {
+                spriteBatch.DrawString(font, "Collision Detection: No", new Vector2(0, 0), Color.Black);
+            }
             spriteBatch.End();
 
             base.Draw(gameTime);

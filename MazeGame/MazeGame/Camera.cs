@@ -3,206 +3,126 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace MazeGame
 {
     public class Camera
     {
-        public const float nearClip = 1.0f;
-        public const float farClip = 100f;
-        public const float viewAngle = MathHelper.PiOver4;
-        public const float movementSpeed = 1f / 30f;
-        public const float rotationSpeed = 1f / 40f;
-        public Vector3 zoomLevel1 = new Vector3(0, 5, -5);
-        public Vector3 zoomLevel2 = new Vector3(0, 13, -5);
-        public Vector3 zoomLevel3 = new Vector3(0, 20, -5);
-        public Vector3 startingPosition = new Vector3(0.5f, 0, 0.5f);
+        public float FOVLevel1 = MathHelper.PiOver4;
+        public float FOVLevel2 = MathHelper.PiOver2;
+        public float FOVLevel3 = MathHelper.ToRadians(120);
+        public float nearClip = 0.05f;
+        public float farClip = 100f;
+        public Vector3 startingPosition = new Vector3(0.5f, 0.5f, 0.5f);
 
-        public GraphicsDevice device;
+        public float[] FOVLevels;
+        public int currentFOVLevel;
+        public float aspectRatio;
 
-        public float playerYaw;
-        public float playerPitch;
+        private Vector3 position = Vector3.Zero;
+        private float leftRightRotation;
+        private float upDownRotation;
+        private Vector3 lookAt;
+        private Vector3 baseCameraReference = new Vector3(0, 0, 1);
+        private bool needViewResync = true;
+        private Matrix viewMatrix;
 
-        public Vector3 baseReference;
-        public Vector3 playerPosition;
-        public Vector3[] zoomLevels;
-        public int currentZoomLevel;
-
-        public Matrix view;
-        public Matrix projection;
-
-        public Maze maze;
-
-        KeyboardState oldKeyboard;
-        KeyboardState newKeyboard;
-
-        GamePadState oldGamepad;
-        GamePadState newGamepad;
-
-        public Camera(GraphicsDevice device, Maze maze)
+        public Vector3 Position
         {
-            zoomLevels = new Vector3[3] { zoomLevel1, zoomLevel2, zoomLevel3 };
-            baseReference = zoomLevels[0];
-            currentZoomLevel = 0;
-            playerPosition = startingPosition;
-            this.device = device;
-            this.maze = maze;
-
-            oldKeyboard = Keyboard.GetState();
-            newKeyboard = Keyboard.GetState();
-
-            oldGamepad = GamePad.GetState(PlayerIndex.One);
-            newGamepad = GamePad.GetState(PlayerIndex.One);
-        }
-
-        public void UpdatePlayerPosition()
-        {
-            oldKeyboard = newKeyboard;
-            newKeyboard = Keyboard.GetState();
-
-            oldGamepad = newGamepad;
-            newGamepad = GamePad.GetState(PlayerIndex.One);
-
-            if(newKeyboard.IsKeyDown(Keys.Left) || newGamepad.ThumbSticks.Left.X < 0)
+            get
             {
-                playerPitch = 0;
-                playerYaw += rotationSpeed;
+                return position;
             }
-
-            if(newKeyboard.IsKeyDown(Keys.Right) || newGamepad.ThumbSticks.Left.X > 0)
+            set
             {
-                playerPitch = 0;
-                playerYaw -= rotationSpeed;
-            }
-
-            if((!newKeyboard.IsKeyDown(Keys.LeftShift) && newKeyboard.IsKeyDown(Keys.Up)) || newGamepad.ThumbSticks.Left.Y > 0)
-            {
-                bool collision = false;
-                Matrix forwardMovement = Matrix.CreateRotationY(playerYaw);
-                Vector3 v = new Vector3(0, 0, movementSpeed);
-                v = Vector3.Transform(v, forwardMovement);
-
-                if((playerPosition.X + v.X) < 0 && (playerPosition.X + v.X) > Maze.mazeWidth)
-                {
-                    collision = true;
-                }
-
-                if((playerPosition.Z + v.Z) < 0 && (playerPosition.Z + v.Z) > Maze.mazeHeight)
-                {
-                    collision = true;
-                }
-
-                if(!collision)
-                {
-                    Vector3 temp = new Vector3(playerPosition.X + v.X, 0, playerPosition.Z + v.Z);
-                    foreach (BoundingBox box in maze.GetBoundsForCell((int)temp.X, (int)temp.Z))
-                    {
-                        if (box.Contains(temp) == ContainmentType.Contains)
-                        {
-                            collision = true;
-                        }
-                    }
-                }
-
-                if(!collision || !Game1.clippingOn)
-                {
-                    playerPosition.X += v.X;
-                    playerPosition.Z += v.Z;
-                }
-            }
-
-            if((!newKeyboard.IsKeyDown(Keys.LeftShift) && newKeyboard.IsKeyDown(Keys.Down)) || newGamepad.ThumbSticks.Left.Y < 0)
-            {
-                bool collision = false;
-                Matrix forwardMovement = Matrix.CreateRotationY(playerYaw);
-                Vector3 v = new Vector3(0, 0, -movementSpeed);
-                v = Vector3.Transform(v, forwardMovement);
-
-                if ((playerPosition.X + v.X) < 0 && (playerPosition.X + v.X) > Maze.mazeWidth)
-                {
-                    collision = true;
-                }
-
-                if ((playerPosition.Z + v.Z) < 0 && (playerPosition.Z + v.Z) > Maze.mazeHeight)
-                {
-                    collision = true;
-                }
-
-                if (!collision)
-                {
-                    Vector3 temp = new Vector3(playerPosition.X + v.X, 0, playerPosition.Z + v.Z);
-                    foreach (BoundingBox box in maze.GetBoundsForCell((int)temp.X, (int)temp.Z))
-                    {
-                        if (box.Contains(temp) == ContainmentType.Contains)
-                        {
-                            collision = true;
-                        }
-                    }
-                }
-
-                if (!collision || !Game1.clippingOn)
-                {
-                    playerPosition.X += v.X;
-                    playerPosition.Z += v.Z;
-                }
-            }
-
-            if((newKeyboard.IsKeyDown(Keys.LeftShift) && newKeyboard.IsKeyDown(Keys.Up)) || newGamepad.ThumbSticks.Right.Y > 0)
-            {
-                if(playerPitch < 0.65)
-                {
-                    playerPitch += rotationSpeed;
-                }
-            }
-
-            if((newKeyboard.IsKeyDown(Keys.LeftShift) && newKeyboard.IsKeyDown(Keys.Down)) || newGamepad.ThumbSticks.Right.Y < 0)
-            {
-                if(playerPitch > -0.65)
-                {
-                    playerPitch -= rotationSpeed;
-                }
-            }
-
-            if ((newKeyboard.IsKeyDown(Keys.LeftShift) && newKeyboard.IsKeyDown(Keys.Z) && !oldKeyboard.IsKeyDown(Keys.Z))
-                || (newGamepad.Buttons.A == ButtonState.Pressed && oldGamepad.Buttons.A != ButtonState.Pressed))
-            {
-                if (currentZoomLevel < 2)
-                {
-                    currentZoomLevel++;
-                    baseReference = zoomLevels[currentZoomLevel];
-                }
-            }
-
-            if ((!newKeyboard.IsKeyDown(Keys.LeftShift) && newKeyboard.IsKeyDown(Keys.Z) && !oldKeyboard.IsKeyDown(Keys.Z))
-                || (newGamepad.Buttons.B == ButtonState.Pressed && oldGamepad.Buttons.B != ButtonState.Pressed))
-            {
-                if (currentZoomLevel > 0)
-                {
-                    currentZoomLevel--;
-                    baseReference = zoomLevels[currentZoomLevel];
-                }
-            }
-
-            if(newKeyboard.IsKeyDown(Keys.Home) || newGamepad.Buttons.Start == ButtonState.Pressed)
-            {
-                currentZoomLevel = 0;
-                baseReference = zoomLevels[currentZoomLevel];
-                playerPosition = startingPosition;
+                position = value;
+                UpdateLookAt();
             }
         }
 
-        public void UpdateCamera()
+        public float LeftRightRotation
         {
-            Matrix rotationMatrixY = Matrix.CreateRotationY(playerYaw);
-            Matrix rotationMatrixX = Matrix.CreateRotationX(playerPitch);
-            Vector3 transformedReference = Vector3.Transform(baseReference, rotationMatrixY);
-            Vector3 finalReference = Vector3.Transform(transformedReference, rotationMatrixX);
-            Vector3 cameraPosition = finalReference + playerPosition;
-            view = Matrix.CreateLookAt(cameraPosition, playerPosition, Vector3.Up);
-            projection = Matrix.CreatePerspectiveFieldOfView(viewAngle, device.Viewport.AspectRatio,
-                nearClip, farClip);
+            get
+            {
+                return leftRightRotation;
+            }
+            set
+            {
+                leftRightRotation = value;
+                UpdateLookAt();
+            }
+        }
+
+        public float UpDownRotation
+        {
+            get
+            {
+                return upDownRotation;
+            }
+            set{
+                upDownRotation = value;
+                UpdateLookAt();
+            }
+        }
+
+        public Matrix Projection { get; set; }
+
+        public Matrix View
+        {
+            get
+            {
+                if (needViewResync)
+                {
+                    viewMatrix = Matrix.CreateLookAt(Position, lookAt, Vector3.Up);
+                }
+                return viewMatrix;
+            }
+        }
+
+        public Camera(float aspectRatio)
+        {
+            FOVLevels = new float[3] { FOVLevel1, FOVLevel2, FOVLevel3 };
+            currentFOVLevel = 0;
+            this.aspectRatio = aspectRatio;
+
+            Projection = Matrix.CreatePerspectiveFieldOfView(FOVLevels[currentFOVLevel],
+                aspectRatio, nearClip, farClip);
+            MoveTo(startingPosition, leftRightRotation, upDownRotation);
+        }
+
+        private void UpdateLookAt()
+        {
+            Matrix rotationMatrix = Matrix.CreateRotationX(upDownRotation) * Matrix.CreateRotationY(leftRightRotation);
+            Vector3 lookAtOffset = Vector3.Transform(baseCameraReference, rotationMatrix);
+            lookAt = position + lookAtOffset;
+            needViewResync = true;
+        }
+
+        public Vector3 PreviewMove(float scale)
+        {
+            Matrix rotate = Matrix.CreateRotationY(leftRightRotation);
+            Vector3 forward = new Vector3(0, 0, scale);
+            forward = Vector3.Transform(forward, rotate);
+            return position + forward;
+        }
+
+        public void MoveForward(float scale)
+        {
+            MoveTo(PreviewMove(scale), leftRightRotation, upDownRotation);
+        }
+
+        public void MoveTo(Vector3 position, float leftRightRotation, float upDownRotation)
+        {
+            this.position = position;
+            this.leftRightRotation = leftRightRotation;
+            this.upDownRotation = upDownRotation;
+            UpdateLookAt();
+        }
+
+        public void UpdateProjection()
+        {
+            Projection = Matrix.CreatePerspectiveFieldOfView(FOVLevels[currentFOVLevel],
+                aspectRatio, nearClip, farClip);
         }
     }
 }

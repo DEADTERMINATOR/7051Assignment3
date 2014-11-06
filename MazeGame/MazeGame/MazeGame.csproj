@@ -72,6 +72,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ThirdPersonCamera.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Maze.cs" />
     <Compile Include="MazeCell.cs" />

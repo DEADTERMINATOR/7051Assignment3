@@ -305,8 +305,8 @@ namespace MazeGame
             {
                 effects[i].TextureEnabled = true;
                 effects[i].World = Matrix.Identity;
-                effects[i].View = camera.view;
-                effects[i].Projection = camera.projection;
+                effects[i].View = camera.View;
+                effects[i].Projection = camera.Projection;
             }
 
             for(int i = 0; i < effects.Length; i++)
@@ -334,24 +334,6 @@ namespace MazeGame
                     device.DrawPrimitives(PrimitiveType.TriangleList, 0, wallBuffers[i - 1].VertexCount / 3);
                 }
             }
-
-            //DrawModel(camera, effect);
         }
-
-        /*public void DrawModel(Camera camera, BasicEffect effect)
-        {
-            foreach(ModelMesh mesh in playerModel.Meshes)
-            {
-                foreach(BasicEffect be in mesh.Effects)
-                {
-                    be.Projection = camera.projection;
-                    be.View = camera.view;
-                    be.World = effect.World;
-                    be.Texture = playerTexture;
-                    be.TextureEnabled = true;
-                }
-                mesh.Draw();
-            }
-        }*/
     }
 }
