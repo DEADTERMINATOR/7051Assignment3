@@ -356,11 +356,16 @@ namespace MazeGame
                 effects[i].View = camera.View;
                 effects[i].Projection = camera.Projection;
                 effects[i].AmbientLightColor = ambientColor;
-                effects[i].FogColor = Color.Black.ToVector3();
+                effects[i].FogColor = Color.CornflowerBlue.ToVector3();
                 effects[i].FogEnabled = true;
-                effects[i].FogStart = 0f;
-                effects[i].FogEnd = 3f;
+                effects[i].FogStart = 1f;
+                effects[i].FogEnd = 2.5f;
                 effects[i].LightingEnabled = true;
+                effects[i].DirectionalLight0.Enabled = true;
+                effects[i].DirectionalLight0.Direction = camera.View.Forward;
+                effects[i].DirectionalLight0.DiffuseColor = Color.Transparent.ToVector3();
+                //effects[i].DirectionalLight0.SpecularColor = Color.White.ToVector3();
+                //effects[i].EmissiveColor = Color.White.ToVector3();
             }
 
             for(int i = 0; i < effects.Length; i++)

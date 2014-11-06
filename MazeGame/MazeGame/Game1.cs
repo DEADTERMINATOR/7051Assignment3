@@ -230,7 +230,7 @@ namespace MazeGame
 
             if (Keyboard.GetState().IsKeyDown(Keys.P))
             {
-                maze.ambientColor = new Vector3(.3f, .3f, .3f);
+                maze.ambientColor = new Vector3(.1f, .1f, .1f);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.O))
             {

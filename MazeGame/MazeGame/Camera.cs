@@ -53,6 +53,15 @@ namespace MazeGame
             }
         }
 
+        public Vector3 LookAt
+        {
+            get
+            {
+                //lookAt.Normalize();
+                return lookAt;
+            }
+        }
+
         public float UpDownRotation
         {
             get
