@@ -42,7 +42,7 @@ namespace MazeGame
         KeyboardState oldKeyState, newKeyState;
         GamePadState oldPadState, newPadState;
         SpriteFont font;
-
+        
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -59,7 +59,7 @@ namespace MazeGame
         {
             LoadContent();
             maze = new Maze(GraphicsDevice, new Texture2D[5] { floorTexture, brickWallTexture, 
-                glassWallTexture, metalWallTexture, pebbleWallTexture });
+                glassWallTexture, pebbleWallTexture, metalWallTexture });
             camera = new Camera(GraphicsDevice.Viewport.AspectRatio);
             floorEffect = new BasicEffect(GraphicsDevice);
             brickWallEffect = new BasicEffect(GraphicsDevice);
@@ -86,6 +86,11 @@ namespace MazeGame
             glassWallTexture = Content.Load<Texture2D>("hammeredglasswall");
             metalWallTexture = Content.Load<Texture2D>("metalwall");
             pebbleWallTexture = Content.Load<Texture2D>("pebblewall");
+            //floorEffect = Content.Load<Effect>("Shader");
+            //brickWallEffect = Content.Load<Effect>("Shader");
+            //glassWallEffect = Content.Load<Effect>("Shader");
+            //metalWallEffect = Content.Load<Effect>("Shader");
+            //pebbleWallEffect = Content.Load<Effect>("Shader");
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -160,14 +165,7 @@ namespace MazeGame
             if((newKeyState.IsKeyDown(Keys.W) && !oldKeyState.IsKeyDown(Keys.W))
                 || (newPadState.Buttons.Y == ButtonState.Pressed && oldPadState.Buttons.Y != ButtonState.Pressed))
             {
-                if(collisionOn)
-                {
-                    collisionOn = false;
-                }
-                else
-                {
-                    collisionOn = true;
-                }
+                collisionOn = !collisionOn;
             }
 
             if((newKeyState.IsKeyDown(Keys.LeftShift) && newKeyState.IsKeyDown(Keys.Z) && !oldKeyState.IsKeyDown(Keys.Z))
@@ -230,6 +228,15 @@ namespace MazeGame
                 }
             }
 
+            if (Keyboard.GetState().IsKeyDown(Keys.P))
+            {
+                maze.ambientColor = new Vector3(.3f, .3f, .3f);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.O))
+            {
+                maze.ambientColor = Color.White.ToVector3();
+            }
+
             base.Update(gameTime);
         }
 
@@ -242,7 +249,7 @@ namespace MazeGame
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             maze.Draw(camera, new BasicEffect[5] { floorEffect, brickWallEffect, glassWallEffect, metalWallEffect, pebbleWallEffect });
-
+            //maze.Draw(camera, new Effect[5] { ambient, ambient, ambient, ambient, ambient});
             spriteBatch.Begin();
             if(collisionOn)
             {

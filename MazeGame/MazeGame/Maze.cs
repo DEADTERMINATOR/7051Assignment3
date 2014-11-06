@@ -24,6 +24,9 @@ namespace MazeGame
         private Random RNG = new Random();
         public MazeCell[,] MazeCells = new MazeCell[mazeWidth, mazeHeight];
 
+        public float lightIntensity = 0.8f;
+        public Vector3 ambientColor = Color.White.ToVector3();
+
         public Maze(GraphicsDevice device, Texture2D[] textures)
         {
             this.device = device;
@@ -299,6 +302,51 @@ namespace MazeGame
             return thisBox;
         }
 
+        public void Draw(Camera camera, Effect[] effects)
+        {
+            effects[0].Parameters["World"].SetValue(Matrix.Identity);
+            effects[0].Parameters["View"].SetValue(camera.View);
+            effects[0].Parameters["Projection"].SetValue(camera.Projection);
+            effects[0].Parameters["ViewVector"].SetValue(camera.Position);
+
+            Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(Matrix.Identity));
+            effects[0].Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
+
+            effects[0].Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
+            effects[0].Parameters["AmbientIntensity"].SetValue(lightIntensity);
+            for (int i = 1; i < effects.Length; i++)
+            {
+                effects[i] = effects[0].Clone();
+                
+            }
+
+            for (int i = 0; i < effects.Length; i++)
+            {
+                effects[i].Parameters["ModelTexture"].SetValue(textures[i]);
+            }
+
+            device.SamplerStates[0] = SamplerState.LinearClamp;
+            device.BlendState = BlendState.Opaque;
+            device.DepthStencilState = DepthStencilState.Default;
+            
+            foreach (EffectPass pass in effects[0].CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                device.SetVertexBuffer(floorBuffer);
+                device.DrawPrimitives(PrimitiveType.TriangleList, 0, floorBuffer.VertexCount / 3);
+            }
+
+            for (int i = 1; i < effects.Length; i++)
+            {
+                foreach (EffectPass pass in effects[i].CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    device.SetVertexBuffer(wallBuffers[i - 1]);
+                    device.DrawPrimitives(PrimitiveType.TriangleList, 0, wallBuffers[i - 1].VertexCount / 3);
+                }
+            }
+        }
+
         public void Draw(Camera camera, BasicEffect[] effects)
         {
             for(int i = 0; i < effects.Length; i++)
@@ -307,6 +355,12 @@ namespace MazeGame
                 effects[i].World = Matrix.Identity;
                 effects[i].View = camera.View;
                 effects[i].Projection = camera.Projection;
+                effects[i].AmbientLightColor = ambientColor;
+                effects[i].FogColor = Color.Black.ToVector3();
+                effects[i].FogEnabled = true;
+                effects[i].FogStart = 0f;
+                effects[i].FogEnd = 3f;
+                effects[i].LightingEnabled = true;
             }
 
             for(int i = 0; i < effects.Length; i++)
