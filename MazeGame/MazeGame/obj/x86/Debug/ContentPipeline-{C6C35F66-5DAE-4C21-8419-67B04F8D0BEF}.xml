@@ -82,6 +82,33 @@
       <Output>C:\Users\Nick\Documents\7051Assignment3\MazeGame\MazeGame\bin\x86\Debug\Content\Shader2.xnb</Output>
       <Time>2014-11-05T23:35:01.9078171-08:00</Time>
     </Item>
+    <Item>
+      <Source>Texture.fx</Source>
+      <Name>Texture</Name>
+      <Importer>EffectImporter</Importer>
+      <Processor>EffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nick\Documents\7051Assignment3\MazeGame\MazeGame\bin\x86\Debug\Content\Texture.xnb</Output>
+      <Time>2014-11-06T15:37:51.8363876-08:00</Time>
+    </Item>
+    <Item>
+      <Source>Light.png</Source>
+      <Name>Light</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nick\Documents\7051Assignment3\MazeGame\MazeGame\bin\x86\Debug\Content\Light.xnb</Output>
+      <Time>2014-11-06T16:06:31.8501037-08:00</Time>
+    </Item>
+    <Item>
+      <Source>LightDark.png</Source>
+      <Name>LightDark</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nick\Documents\7051Assignment3\MazeGame\MazeGame\bin\x86\Debug\Content\LightDark.xnb</Output>
+      <Time>2014-11-06T16:16:56.5607951-08:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{C6C35F66-5DAE-4C21-8419-67B04F8D0BEF}</ContentProjectGUID>

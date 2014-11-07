@@ -25,3 +25,6 @@ C:\Users\Nick\Documents\7051Assignment3\MazeGame\MazeGame\obj\x86\Debug\MazeGame
 C:\Users\Nick\Documents\7051Assignment3\MazeGame\MazeGame\bin\x86\Debug\Content\Ambient.xnb
 C:\Users\Nick\Documents\7051Assignment3\MazeGame\MazeGame\bin\x86\Debug\Content\Shader.xnb
 C:\Users\Nick\Documents\7051Assignment3\MazeGame\MazeGame\bin\x86\Debug\Content\Shader2.xnb
+C:\Users\Nick\Documents\7051Assignment3\MazeGame\MazeGame\bin\x86\Debug\Content\Texture.xnb
+C:\Users\Nick\Documents\7051Assignment3\MazeGame\MazeGame\bin\x86\Debug\Content\Light.xnb
+C:\Users\Nick\Documents\7051Assignment3\MazeGame\MazeGame\bin\x86\Debug\Content\LightDark.xnb

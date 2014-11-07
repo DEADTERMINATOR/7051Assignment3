@@ -42,6 +42,11 @@ namespace MazeGame
         KeyboardState oldKeyState, newKeyState;
         GamePadState oldPadState, newPadState;
         SpriteFont font;
+        RenderTarget2D renderTarget;
+        Effect texture;
+        Texture2D lightTex;
+        Texture2D darkTex;
+        bool isLight;
         
         public Game1()
         {
@@ -70,7 +75,13 @@ namespace MazeGame
             newKeyState = Keyboard.GetState();
             oldPadState = GamePad.GetState(PlayerIndex.One);
             newPadState = GamePad.GetState(PlayerIndex.One);
-
+            renderTarget = new RenderTarget2D(GraphicsDevice,
+                GraphicsDevice.PresentationParameters.BackBufferWidth,
+                GraphicsDevice.PresentationParameters.BackBufferHeight,
+                false,
+                GraphicsDevice.PresentationParameters.BackBufferFormat,
+                DepthFormat.Depth24);
+            isLight = true;
             base.Initialize();
         }
 
@@ -91,9 +102,12 @@ namespace MazeGame
             //glassWallEffect = Content.Load<Effect>("Shader");
             //metalWallEffect = Content.Load<Effect>("Shader");
             //pebbleWallEffect = Content.Load<Effect>("Shader");
-
+            texture = Content.Load<Effect>("Texture");
+            lightTex = Content.Load<Texture2D>("Light");
+            darkTex = Content.Load<Texture2D>("LightDark");
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
 
             // TODO: use this.Content to load your game content here
         }
@@ -228,14 +242,12 @@ namespace MazeGame
                 }
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.P))
+            if ((newKeyState.IsKeyDown(Keys.P) && !oldKeyState.IsKeyDown(Keys.P))
+                || (newPadState.Buttons.X == ButtonState.Pressed && oldPadState.Buttons.X != ButtonState.Pressed))
             {
-                maze.ambientColor = new Vector3(.1f, .1f, .1f);
+                isLight = !isLight;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.O))
-            {
-                maze.ambientColor = Color.White.ToVector3();
-            }
+            
 
             base.Update(gameTime);
         }
@@ -246,19 +258,36 @@ namespace MazeGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            //GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            
+
+            GraphicsDevice.SetRenderTarget(renderTarget);
             maze.Draw(camera, new BasicEffect[5] { floorEffect, brickWallEffect, glassWallEffect, metalWallEffect, pebbleWallEffect });
-            //maze.Draw(camera, new Effect[5] { ambient, ambient, ambient, ambient, ambient});
-            spriteBatch.Begin();
-            if(collisionOn)
-            {
-                spriteBatch.DrawString(font, "Collision Detection: Yes", new Vector2(0, 0), Color.Black);
-            }
-            else
-            {
-                spriteBatch.DrawString(font, "Collision Detection: No", new Vector2(0, 0), Color.Black);
-            }
+            GraphicsDevice.SetRenderTarget(null);
+
+            texture.Parameters["ScreenTexture"].SetValue(renderTarget);
+            if (isLight)
+                texture.Parameters["LightTexture"].SetValue(lightTex);
+            else texture.Parameters["LightTexture"].SetValue(darkTex);
+            //spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend,
+            //    SamplerState.LinearClamp, DepthStencilState.Default,
+            //    RasterizerState.CullNone);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque,
+                SamplerState.LinearClamp, DepthStencilState.Default,
+                RasterizerState.CullCounterClockwise, texture);
+            
+            spriteBatch.Draw(renderTarget, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
+            
+
+            //if(collisionOn)
+            //{
+            //    spriteBatch.DrawString(font, "Collision Detection: Yes", new Vector2(0, 0), Color.Black);
+            //}
+            //else
+            //{
+            //    spriteBatch.DrawString(font, "Collision Detection: No", new Vector2(0, 0), Color.Black);
+            //}
             spriteBatch.End();
 
             base.Draw(gameTime);

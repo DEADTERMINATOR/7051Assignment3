@@ -356,14 +356,14 @@ namespace MazeGame
                 effects[i].View = camera.View;
                 effects[i].Projection = camera.Projection;
                 effects[i].AmbientLightColor = ambientColor;
-                effects[i].FogColor = Color.CornflowerBlue.ToVector3();
+                effects[i].FogColor = Color.Transparent.ToVector3();
                 effects[i].FogEnabled = true;
                 effects[i].FogStart = 1f;
-                effects[i].FogEnd = 2.5f;
+                effects[i].FogEnd = 3f;
                 effects[i].LightingEnabled = true;
-                effects[i].DirectionalLight0.Enabled = true;
-                effects[i].DirectionalLight0.Direction = camera.View.Forward;
-                effects[i].DirectionalLight0.DiffuseColor = Color.Transparent.ToVector3();
+                //effects[i].DirectionalLight0.Enabled = false;
+                //effects[i].DirectionalLight0.Direction = camera.View.Forward;
+                //effects[i].DirectionalLight0.DiffuseColor = Color.Transparent.ToVector3();
                 //effects[i].DirectionalLight0.SpecularColor = Color.White.ToVector3();
                 //effects[i].EmissiveColor = Color.White.ToVector3();
             }
@@ -372,7 +372,7 @@ namespace MazeGame
             {
                 effects[i].Texture = textures[i];
             }
-
+            device.Clear(Color.Black);
             device.SamplerStates[0] = SamplerState.LinearClamp;
             device.BlendState = BlendState.Opaque;
             device.DepthStencilState = DepthStencilState.Default;

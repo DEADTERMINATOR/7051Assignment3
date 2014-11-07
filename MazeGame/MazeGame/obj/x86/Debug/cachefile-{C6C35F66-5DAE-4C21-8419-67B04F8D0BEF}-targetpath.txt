@@ -7,3 +7,6 @@ Content\pebblewall.xnb
 Content\Ambient.xnb
 Content\Shader.xnb
 Content\Shader2.xnb
+Content\Texture.xnb
+Content\Light.xnb
+Content\LightDark.xnb
