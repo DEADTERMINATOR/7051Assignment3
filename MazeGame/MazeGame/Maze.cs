@@ -26,6 +26,7 @@ namespace MazeGame
 
         public float lightIntensity = 0.8f;
         public Vector3 ambientColor = Color.White.ToVector3();
+        public bool fogToggle;
 
         public Maze(GraphicsDevice device, Texture2D[] textures)
         {
@@ -52,6 +53,7 @@ namespace MazeGame
             wallPoints[7] = new Vector3(1, 0, 1);
             wallBuffers = new VertexBuffer[4];
             BuildWallBuffer();
+            fogToggle = true;
         }
 
         private void BuildFloorBuffer()
@@ -357,7 +359,7 @@ namespace MazeGame
                 effects[i].Projection = camera.Projection;
                 effects[i].AmbientLightColor = ambientColor;
                 effects[i].FogColor = Color.Transparent.ToVector3();
-                effects[i].FogEnabled = true;
+                effects[i].FogEnabled = fogToggle;
                 effects[i].FogStart = 1f;
                 effects[i].FogEnd = 3f;
                 effects[i].LightingEnabled = true;

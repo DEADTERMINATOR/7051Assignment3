@@ -247,6 +247,11 @@ namespace MazeGame
             {
                 isLight = !isLight;
             }
+            if ((newKeyState.IsKeyDown(Keys.I) && !oldKeyState.IsKeyDown(Keys.I))
+                || (newPadState.Buttons.RightShoulder == ButtonState.Pressed && oldPadState.Buttons.RightShoulder != ButtonState.Pressed))
+            {
+                maze.fogToggle = !maze.fogToggle;
+            }
             
 
             base.Update(gameTime);
