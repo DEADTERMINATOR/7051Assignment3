@@ -53,7 +53,7 @@ namespace MazeGame
             wallPoints[7] = new Vector3(1, 0, 1);
             wallBuffers = new VertexBuffer[4];
             BuildWallBuffer();
-            fogToggle = true;
+            fogToggle = false;
         }
 
         private void BuildFloorBuffer()

@@ -9,8 +9,8 @@ namespace MazeGame
     public class Camera
     {
         public float FOVLevel1 = MathHelper.PiOver4;
-        public float FOVLevel2 = MathHelper.PiOver2;
-        public float FOVLevel3 = MathHelper.ToRadians(120);
+        public float FOVLevel2 = MathHelper.ToRadians(75);
+        public float FOVLevel3 = MathHelper.PiOver2;
         public float nearClip = 0.05f;
         public float farClip = 100f;
         public Vector3 startingPosition = new Vector3(0.5f, 0.5f, 0.5f);

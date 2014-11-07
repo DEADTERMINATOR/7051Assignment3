@@ -185,9 +185,9 @@ namespace MazeGame
             if((newKeyState.IsKeyDown(Keys.LeftShift) && newKeyState.IsKeyDown(Keys.Z) && !oldKeyState.IsKeyDown(Keys.Z))
                 || (newPadState.Buttons.A == ButtonState.Pressed && oldPadState.Buttons.A != ButtonState.Pressed))
             {
-                if(camera.currentFOVLevel < 2)
+                if(camera.currentFOVLevel > 0)
                 {
-                    camera.currentFOVLevel++;
+                    camera.currentFOVLevel--;
                     camera.UpdateProjection();
                 }
             }
@@ -195,9 +195,9 @@ namespace MazeGame
             if((!newKeyState.IsKeyDown(Keys.LeftShift) && newKeyState.IsKeyDown(Keys.Z) && !oldKeyState.IsKeyDown(Keys.Z))
                 || (newPadState.Buttons.B == ButtonState.Pressed && oldPadState.Buttons.B != ButtonState.Pressed))
             {
-                if(camera.currentFOVLevel > 0)
+                if(camera.currentFOVLevel < 2)
                 {
-                    camera.currentFOVLevel--;
+                    camera.currentFOVLevel++;
                     camera.UpdateProjection();
                 }
             }
@@ -247,6 +247,7 @@ namespace MazeGame
             {
                 isLight = !isLight;
             }
+
             if ((newKeyState.IsKeyDown(Keys.I) && !oldKeyState.IsKeyDown(Keys.I))
                 || (newPadState.Buttons.RightShoulder == ButtonState.Pressed && oldPadState.Buttons.RightShoulder != ButtonState.Pressed))
             {
